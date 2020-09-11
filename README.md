@@ -141,6 +141,56 @@ Instead of sending encryptedMessage, iv, encryptedMessageKey and messageSignatur
 If there are several receivers, the messageKey could be separately encrypted with the public encrypting keys of all of them.
 Then all different encryptions of the messageKey are placed in the storage. 
 
+
+ACCESS CONTROL
+--------------
+
+*void setAccessRules(String fileId, HeliosAccessControlRulesTable rulesTable)*
+
+This method sets the access rules for file/resource called fileId.
+Rules table lists actions that are allowed for users with some userID or attribute.
+An example of rule table:
+
+	HeliosAccessControlRulesTable table = new HeliosAccessControlRulesTable();
+    table.add("read", ALLOWED, "Bob", USERID);
+    table.add("read", ALLOWED, "Frank", USERID);
+    setAccessRules("myfile", table);
+
+This gives read access for users Bob and Frank for file myfile.
+If the table is null then all rules for the fileId are removed.
+
+
+*HeliosAccessControlRulesTable getAccessRules(String fileId)*
+
+This method returns the rules that were set for file/resource fileId using the setAccessRules method. 
+
+An example:
+
+	HeliosAccessControlRulesTable table = mgr.getAccessRules("myfile");
+        table.remove("read", ALLOWED,"Bob", USERID);
+	table.add("write", DENIED,"Frank", USERID);
+        setAccessRules("myfile", table);
+
+This removes the rule that Bob is allowed to read the file myfile and adds a rule that Frank is not allowed to write to file myfile.
+
+
+*boolean requestAccess(String fileId, String action, String userId)*
+
+This method checks if user with userId has access to perform action on file/resource fileId.
+The method returns false if there is no rule to allow the action for the user or there is a rule that denies the action for the user.
+
+The contextual ego network is queried to find all attributes that the user userId has if they are needed to make the decision.
+At the moment there is only a toy example of hard coded attributes for and all users have attribute "testattribute".
+
+The right to read for all users that have testattribute can be added as follows:
+
+	table.add("read", ALLOWED, "testattribute", EGONETWORKATTRIBUTE);
+
+	
+TODO:
+
+Adding interaction with ContextualEgoNetwork to find out at lest in what contexts the userID is a friend of the Ego.
+
 ```
 
 
