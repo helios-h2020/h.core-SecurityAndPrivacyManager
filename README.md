@@ -5,6 +5,23 @@
 Security and Privacy API provides cryptographic services to HELIOS
 components.<p>
 
+One of the basic principles of HELIOS platform is security and privacy by design. 
+Therefore every message that is sent from a peer to another should be encrypted. <p>
+
+There are two kinds of encryption, Public key encryption and symmetric encryption.
+Because symmetric encryption using AES is fast, messages are encrypted using AES. <p>
+
+Public key encryption enables encrypting messages using the receivers public encryption key such that only the receiver with the corresponding private key can decrypt them.
+Thus the idea is to send the message encrypted with AES and the AES key encrypted with RSA to the receiver.
+This requires that the sender knows the public key of the receiver, i.e. the peers have performed key exhange.
+The receiver can then decrypt the AES key with their secret key and decrypt the actual message using this AES key.<p>
+
+The public key encryption makes it possible to sign messages. The sender signs the messages using their private RSA signature key.
+If the receiver knows the senders public signature verification key, they can verify that the message is signed by the sender and be sure who wrote the message. <p>
+
+For access control there are methods for an application to set who has permissions to user's files and also to check if a peer willing to access these files has permissions to do this. <p>
+
+
 HELIOS Security and Privacy API is one of the HELIOS Core APIs as
 highlighted in the picture below:<p>
 
@@ -150,6 +167,22 @@ Then all different encryptions of the messageKey are placed in the storage.
 
 
 <h3>ACCESS CONTROL</h3>
+
+To star using the access control manager, something like the following is needed:
+
+<pre><code>
+HeliosAccessControlManager mgr = HeliosAccessControlManager.getInstance();
+	String dir = ".";
+	mgr.init(dir);
+</code></pre>
+
+<h4>Methods of access control</h4>
+
+<b><pre><code>	void saveAllRules();
+	void loadAllRules();
+</code></pre></b>
+
+These methods are used to save the access control rules in the directory <code>dir</code> and to load them later.
 
 <b><pre><code>	void setAccessRules(String fileId, HeliosAccessControlRulesTable rulesTable)
 </code></pre></b>
